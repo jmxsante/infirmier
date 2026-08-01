@@ -14,6 +14,68 @@ export type Database = {
   }
   public: {
     Tables: {
+      actes_realises: {
+        Row: {
+          acte_id: string
+          cabinet_id: string
+          created_at: string
+          id: string
+          intervention_id: string
+          observations: string | null
+          quantite: number
+          realise_par: string | null
+        }
+        Insert: {
+          acte_id: string
+          cabinet_id: string
+          created_at?: string
+          id?: string
+          intervention_id: string
+          observations?: string | null
+          quantite?: number
+          realise_par?: string | null
+        }
+        Update: {
+          acte_id?: string
+          cabinet_id?: string
+          created_at?: string
+          id?: string
+          intervention_id?: string
+          observations?: string | null
+          quantite?: number
+          realise_par?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "actes_realises_acte_id_fkey"
+            columns: ["acte_id"]
+            isOneToOne: false
+            referencedRelation: "catalogue_actes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "actes_realises_cabinet_id_fkey"
+            columns: ["cabinet_id"]
+            isOneToOne: false
+            referencedRelation: "cabinets"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "actes_realises_intervention_id_fkey"
+            columns: ["intervention_id"]
+            isOneToOne: false
+            referencedRelation: "interventions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "actes_realises_realise_par_fkey"
+            columns: ["realise_par"]
+            isOneToOne: false
+            referencedRelation: "soignants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       audit_log: {
         Row: {
           action: string
@@ -188,6 +250,524 @@ export type Database = {
         }
         Relationships: []
       }
+      cotations: {
+        Row: {
+          alertes: Json
+          cabinet_id: string
+          calcule_le: string
+          created_at: string
+          deplacement: Json
+          facture_id: string | null
+          id: string
+          intervention_id: string
+          justification: Json
+          lignes: Json
+          majorations: Json
+          patient_id: string
+          total: number
+          total_ht: number
+          updated_at: string
+          version_ngap: string
+        }
+        Insert: {
+          alertes?: Json
+          cabinet_id: string
+          calcule_le?: string
+          created_at?: string
+          deplacement?: Json
+          facture_id?: string | null
+          id?: string
+          intervention_id: string
+          justification?: Json
+          lignes?: Json
+          majorations?: Json
+          patient_id: string
+          total?: number
+          total_ht?: number
+          updated_at?: string
+          version_ngap?: string
+        }
+        Update: {
+          alertes?: Json
+          cabinet_id?: string
+          calcule_le?: string
+          created_at?: string
+          deplacement?: Json
+          facture_id?: string | null
+          id?: string
+          intervention_id?: string
+          justification?: Json
+          lignes?: Json
+          majorations?: Json
+          patient_id?: string
+          total?: number
+          total_ht?: number
+          updated_at?: string
+          version_ngap?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cotations_cabinet_id_fkey"
+            columns: ["cabinet_id"]
+            isOneToOne: false
+            referencedRelation: "cabinets"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cotations_intervention_id_fkey"
+            columns: ["intervention_id"]
+            isOneToOne: true
+            referencedRelation: "interventions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cotations_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "patients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fk_cotations_facture"
+            columns: ["facture_id"]
+            isOneToOne: false
+            referencedRelation: "factures"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      documents: {
+        Row: {
+          ajoute_par: string | null
+          cabinet_id: string
+          created_at: string
+          id: string
+          intervention_id: string | null
+          mime_type: string | null
+          notes: string | null
+          ordonnance_id: string | null
+          patient_id: string | null
+          storage_path: string
+          taille_octets: number | null
+          titre: string
+          type: Database["public"]["Enums"]["type_document"]
+          updated_at: string
+          visible_medecin: boolean
+        }
+        Insert: {
+          ajoute_par?: string | null
+          cabinet_id: string
+          created_at?: string
+          id?: string
+          intervention_id?: string | null
+          mime_type?: string | null
+          notes?: string | null
+          ordonnance_id?: string | null
+          patient_id?: string | null
+          storage_path: string
+          taille_octets?: number | null
+          titre: string
+          type?: Database["public"]["Enums"]["type_document"]
+          updated_at?: string
+          visible_medecin?: boolean
+        }
+        Update: {
+          ajoute_par?: string | null
+          cabinet_id?: string
+          created_at?: string
+          id?: string
+          intervention_id?: string | null
+          mime_type?: string | null
+          notes?: string | null
+          ordonnance_id?: string | null
+          patient_id?: string | null
+          storage_path?: string
+          taille_octets?: number | null
+          titre?: string
+          type?: Database["public"]["Enums"]["type_document"]
+          updated_at?: string
+          visible_medecin?: boolean
+        }
+        Relationships: [
+          {
+            foreignKeyName: "documents_ajoute_par_fkey"
+            columns: ["ajoute_par"]
+            isOneToOne: false
+            referencedRelation: "soignants"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "documents_cabinet_id_fkey"
+            columns: ["cabinet_id"]
+            isOneToOne: false
+            referencedRelation: "cabinets"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "documents_intervention_id_fkey"
+            columns: ["intervention_id"]
+            isOneToOne: false
+            referencedRelation: "interventions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "documents_ordonnance_id_fkey"
+            columns: ["ordonnance_id"]
+            isOneToOne: false
+            referencedRelation: "ordonnances"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "documents_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "patients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      factures: {
+        Row: {
+          cabinet_id: string
+          created_at: string
+          date_envoi: string | null
+          date_paiement: string | null
+          export_le: string | null
+          id: string
+          montant_paye: number
+          motif_rejet: string | null
+          notes: string | null
+          numero: string
+          part_amc: number
+          part_amo: number
+          part_patient: number
+          patient_id: string
+          periode_debut: string
+          periode_fin: string
+          statut: Database["public"]["Enums"]["statut_facture"]
+          total: number
+          updated_at: string
+        }
+        Insert: {
+          cabinet_id: string
+          created_at?: string
+          date_envoi?: string | null
+          date_paiement?: string | null
+          export_le?: string | null
+          id?: string
+          montant_paye?: number
+          motif_rejet?: string | null
+          notes?: string | null
+          numero: string
+          part_amc?: number
+          part_amo?: number
+          part_patient?: number
+          patient_id: string
+          periode_debut: string
+          periode_fin: string
+          statut?: Database["public"]["Enums"]["statut_facture"]
+          total?: number
+          updated_at?: string
+        }
+        Update: {
+          cabinet_id?: string
+          created_at?: string
+          date_envoi?: string | null
+          date_paiement?: string | null
+          export_le?: string | null
+          id?: string
+          montant_paye?: number
+          motif_rejet?: string | null
+          notes?: string | null
+          numero?: string
+          part_amc?: number
+          part_amo?: number
+          part_patient?: number
+          patient_id?: string
+          periode_debut?: string
+          periode_fin?: string
+          statut?: Database["public"]["Enums"]["statut_facture"]
+          total?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "factures_cabinet_id_fkey"
+            columns: ["cabinet_id"]
+            isOneToOne: false
+            referencedRelation: "cabinets"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "factures_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "patients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      incidents: {
+        Row: {
+          actions: string | null
+          cabinet_id: string
+          clos: boolean
+          created_at: string
+          declare_par: string | null
+          description: string
+          gravite: Database["public"]["Enums"]["gravite"]
+          id: string
+          intervention_id: string | null
+          patient_id: string | null
+          survenu_le: string
+          type: string
+          updated_at: string
+        }
+        Insert: {
+          actions?: string | null
+          cabinet_id: string
+          clos?: boolean
+          created_at?: string
+          declare_par?: string | null
+          description: string
+          gravite?: Database["public"]["Enums"]["gravite"]
+          id?: string
+          intervention_id?: string | null
+          patient_id?: string | null
+          survenu_le?: string
+          type: string
+          updated_at?: string
+        }
+        Update: {
+          actions?: string | null
+          cabinet_id?: string
+          clos?: boolean
+          created_at?: string
+          declare_par?: string | null
+          description?: string
+          gravite?: Database["public"]["Enums"]["gravite"]
+          id?: string
+          intervention_id?: string | null
+          patient_id?: string | null
+          survenu_le?: string
+          type?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "incidents_cabinet_id_fkey"
+            columns: ["cabinet_id"]
+            isOneToOne: false
+            referencedRelation: "cabinets"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "incidents_declare_par_fkey"
+            columns: ["declare_par"]
+            isOneToOne: false
+            referencedRelation: "soignants"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "incidents_intervention_id_fkey"
+            columns: ["intervention_id"]
+            isOneToOne: false
+            referencedRelation: "interventions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "incidents_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "patients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      interventions: {
+        Row: {
+          cabinet_id: string
+          created_at: string
+          date: string
+          debut_prevu: string
+          debut_reel: string | null
+          distance_precedent_km: number | null
+          duree_trajet_min: number | null
+          fenetre_debut: string | null
+          fenetre_fin: string | null
+          fin_prevue: string
+          fin_reelle: string | null
+          horaire_verrouille: boolean
+          id: string
+          lat_pointage: number | null
+          lng_pointage: number | null
+          motif: string | null
+          notes: string | null
+          ordre: number
+          patient_id: string
+          periode: Database["public"]["Enums"]["periode_tournee"]
+          plan_id: string | null
+          soignant_id: string | null
+          statut: Database["public"]["Enums"]["statut_intervention"]
+          tournee_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          cabinet_id: string
+          created_at?: string
+          date: string
+          debut_prevu: string
+          debut_reel?: string | null
+          distance_precedent_km?: number | null
+          duree_trajet_min?: number | null
+          fenetre_debut?: string | null
+          fenetre_fin?: string | null
+          fin_prevue: string
+          fin_reelle?: string | null
+          horaire_verrouille?: boolean
+          id?: string
+          lat_pointage?: number | null
+          lng_pointage?: number | null
+          motif?: string | null
+          notes?: string | null
+          ordre?: number
+          patient_id: string
+          periode?: Database["public"]["Enums"]["periode_tournee"]
+          plan_id?: string | null
+          soignant_id?: string | null
+          statut?: Database["public"]["Enums"]["statut_intervention"]
+          tournee_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          cabinet_id?: string
+          created_at?: string
+          date?: string
+          debut_prevu?: string
+          debut_reel?: string | null
+          distance_precedent_km?: number | null
+          duree_trajet_min?: number | null
+          fenetre_debut?: string | null
+          fenetre_fin?: string | null
+          fin_prevue?: string
+          fin_reelle?: string | null
+          horaire_verrouille?: boolean
+          id?: string
+          lat_pointage?: number | null
+          lng_pointage?: number | null
+          motif?: string | null
+          notes?: string | null
+          ordre?: number
+          patient_id?: string
+          periode?: Database["public"]["Enums"]["periode_tournee"]
+          plan_id?: string | null
+          soignant_id?: string | null
+          statut?: Database["public"]["Enums"]["statut_intervention"]
+          tournee_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "interventions_cabinet_id_fkey"
+            columns: ["cabinet_id"]
+            isOneToOne: false
+            referencedRelation: "cabinets"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "interventions_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "patients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "interventions_plan_id_fkey"
+            columns: ["plan_id"]
+            isOneToOne: false
+            referencedRelation: "plans_de_soins"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "interventions_soignant_id_fkey"
+            columns: ["soignant_id"]
+            isOneToOne: false
+            referencedRelation: "soignants"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "interventions_tournee_id_fkey"
+            columns: ["tournee_id"]
+            isOneToOne: false
+            referencedRelation: "tournees"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      lignes_facture: {
+        Row: {
+          cabinet_id: string
+          code: string
+          coefficient: number
+          cotation_id: string | null
+          created_at: string
+          date_acte: string
+          facture_id: string
+          id: string
+          libelle: string
+          montant: number
+          taux: number
+        }
+        Insert: {
+          cabinet_id: string
+          code: string
+          coefficient?: number
+          cotation_id?: string | null
+          created_at?: string
+          date_acte: string
+          facture_id: string
+          id?: string
+          libelle: string
+          montant?: number
+          taux?: number
+        }
+        Update: {
+          cabinet_id?: string
+          code?: string
+          coefficient?: number
+          cotation_id?: string | null
+          created_at?: string
+          date_acte?: string
+          facture_id?: string
+          id?: string
+          libelle?: string
+          montant?: number
+          taux?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lignes_facture_cabinet_id_fkey"
+            columns: ["cabinet_id"]
+            isOneToOne: false
+            referencedRelation: "cabinets"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lignes_facture_cotation_id_fkey"
+            columns: ["cotation_id"]
+            isOneToOne: false
+            referencedRelation: "cotations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lignes_facture_facture_id_fkey"
+            columns: ["facture_id"]
+            isOneToOne: false
+            referencedRelation: "factures"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       ordonnances: {
         Row: {
           actes_prescrits: Json
@@ -279,6 +859,124 @@ export type Database = {
             columns: ["prescripteur_id"]
             isOneToOne: false
             referencedRelation: "prescripteurs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      paiements: {
+        Row: {
+          cabinet_id: string
+          created_at: string
+          date_paiement: string
+          facture_id: string
+          id: string
+          montant: number
+          notes: string | null
+          reference: string | null
+          source: string
+        }
+        Insert: {
+          cabinet_id: string
+          created_at?: string
+          date_paiement?: string
+          facture_id: string
+          id?: string
+          montant: number
+          notes?: string | null
+          reference?: string | null
+          source?: string
+        }
+        Update: {
+          cabinet_id?: string
+          created_at?: string
+          date_paiement?: string
+          facture_id?: string
+          id?: string
+          montant?: number
+          notes?: string | null
+          reference?: string | null
+          source?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "paiements_cabinet_id_fkey"
+            columns: ["cabinet_id"]
+            isOneToOne: false
+            referencedRelation: "cabinets"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "paiements_facture_id_fkey"
+            columns: ["facture_id"]
+            isOneToOne: false
+            referencedRelation: "factures"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      partage_jours: {
+        Row: {
+          cabinet_id: string
+          created_at: string
+          date_debut: string
+          date_fin: string | null
+          id: string
+          jours_semaine: number[]
+          notes: string | null
+          periodes: Database["public"]["Enums"]["periode_tournee"][]
+          regle: string
+          remplace_soignant_id: string | null
+          soignant_id: string
+          updated_at: string
+        }
+        Insert: {
+          cabinet_id: string
+          created_at?: string
+          date_debut: string
+          date_fin?: string | null
+          id?: string
+          jours_semaine?: number[]
+          notes?: string | null
+          periodes?: Database["public"]["Enums"]["periode_tournee"][]
+          regle?: string
+          remplace_soignant_id?: string | null
+          soignant_id: string
+          updated_at?: string
+        }
+        Update: {
+          cabinet_id?: string
+          created_at?: string
+          date_debut?: string
+          date_fin?: string | null
+          id?: string
+          jours_semaine?: number[]
+          notes?: string | null
+          periodes?: Database["public"]["Enums"]["periode_tournee"][]
+          regle?: string
+          remplace_soignant_id?: string | null
+          soignant_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "partage_jours_cabinet_id_fkey"
+            columns: ["cabinet_id"]
+            isOneToOne: false
+            referencedRelation: "cabinets"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "partage_jours_remplace_soignant_id_fkey"
+            columns: ["remplace_soignant_id"]
+            isOneToOne: false
+            referencedRelation: "soignants"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "partage_jours_soignant_id_fkey"
+            columns: ["soignant_id"]
+            isOneToOne: false
+            referencedRelation: "soignants"
             referencedColumns: ["id"]
           },
         ]
@@ -551,6 +1249,150 @@ export type Database = {
           },
         ]
       }
+      plan_soins_actes: {
+        Row: {
+          acte_id: string
+          cabinet_id: string
+          consignes: string | null
+          created_at: string
+          id: string
+          plan_id: string
+          quantite: number
+        }
+        Insert: {
+          acte_id: string
+          cabinet_id: string
+          consignes?: string | null
+          created_at?: string
+          id?: string
+          plan_id: string
+          quantite?: number
+        }
+        Update: {
+          acte_id?: string
+          cabinet_id?: string
+          consignes?: string | null
+          created_at?: string
+          id?: string
+          plan_id?: string
+          quantite?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "plan_soins_actes_acte_id_fkey"
+            columns: ["acte_id"]
+            isOneToOne: false
+            referencedRelation: "catalogue_actes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "plan_soins_actes_cabinet_id_fkey"
+            columns: ["cabinet_id"]
+            isOneToOne: false
+            referencedRelation: "cabinets"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "plan_soins_actes_plan_id_fkey"
+            columns: ["plan_id"]
+            isOneToOne: false
+            referencedRelation: "plans_de_soins"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      plans_de_soins: {
+        Row: {
+          actif: boolean
+          cabinet_id: string
+          created_at: string
+          date_debut: string
+          date_fin: string | null
+          duree_minutes: number
+          fenetre_debut: string | null
+          fenetre_fin: string | null
+          heure_cible: string | null
+          id: string
+          jours_semaine: number[]
+          libelle: string
+          ordonnance_id: string | null
+          patient_id: string
+          periodes: Database["public"]["Enums"]["periode_tournee"][]
+          protocole: string | null
+          soignant_prefere_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          actif?: boolean
+          cabinet_id: string
+          created_at?: string
+          date_debut?: string
+          date_fin?: string | null
+          duree_minutes?: number
+          fenetre_debut?: string | null
+          fenetre_fin?: string | null
+          heure_cible?: string | null
+          id?: string
+          jours_semaine?: number[]
+          libelle: string
+          ordonnance_id?: string | null
+          patient_id: string
+          periodes?: Database["public"]["Enums"]["periode_tournee"][]
+          protocole?: string | null
+          soignant_prefere_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          actif?: boolean
+          cabinet_id?: string
+          created_at?: string
+          date_debut?: string
+          date_fin?: string | null
+          duree_minutes?: number
+          fenetre_debut?: string | null
+          fenetre_fin?: string | null
+          heure_cible?: string | null
+          id?: string
+          jours_semaine?: number[]
+          libelle?: string
+          ordonnance_id?: string | null
+          patient_id?: string
+          periodes?: Database["public"]["Enums"]["periode_tournee"][]
+          protocole?: string | null
+          soignant_prefere_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "plans_de_soins_cabinet_id_fkey"
+            columns: ["cabinet_id"]
+            isOneToOne: false
+            referencedRelation: "cabinets"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "plans_de_soins_ordonnance_id_fkey"
+            columns: ["ordonnance_id"]
+            isOneToOne: false
+            referencedRelation: "ordonnances"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "plans_de_soins_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "patients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "plans_de_soins_soignant_prefere_id_fkey"
+            columns: ["soignant_prefere_id"]
+            isOneToOne: false
+            referencedRelation: "soignants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       prescripteurs: {
         Row: {
           adresse: string | null
@@ -699,6 +1541,307 @@ export type Database = {
           },
         ]
       }
+      stocks: {
+        Row: {
+          cabinet_id: string
+          categorie: string | null
+          created_at: string
+          date_peremption: string | null
+          fournisseur: string | null
+          id: string
+          libelle: string
+          notes: string | null
+          quantite: number
+          seuil_alerte: number
+          unite: string
+          updated_at: string
+        }
+        Insert: {
+          cabinet_id: string
+          categorie?: string | null
+          created_at?: string
+          date_peremption?: string | null
+          fournisseur?: string | null
+          id?: string
+          libelle: string
+          notes?: string | null
+          quantite?: number
+          seuil_alerte?: number
+          unite?: string
+          updated_at?: string
+        }
+        Update: {
+          cabinet_id?: string
+          categorie?: string | null
+          created_at?: string
+          date_peremption?: string | null
+          fournisseur?: string | null
+          id?: string
+          libelle?: string
+          notes?: string | null
+          quantite?: number
+          seuil_alerte?: number
+          unite?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "stocks_cabinet_id_fkey"
+            columns: ["cabinet_id"]
+            isOneToOne: false
+            referencedRelation: "cabinets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      taches: {
+        Row: {
+          assignee_id: string | null
+          cabinet_id: string
+          categorie: string | null
+          created_at: string
+          description: string | null
+          echeance: string | null
+          fait_le: string | null
+          id: string
+          intervention_id: string | null
+          patient_id: string | null
+          priorite: number
+          rappel_le: string | null
+          recurrence: string | null
+          statut: Database["public"]["Enums"]["statut_tache"]
+          titre: string
+          updated_at: string
+        }
+        Insert: {
+          assignee_id?: string | null
+          cabinet_id: string
+          categorie?: string | null
+          created_at?: string
+          description?: string | null
+          echeance?: string | null
+          fait_le?: string | null
+          id?: string
+          intervention_id?: string | null
+          patient_id?: string | null
+          priorite?: number
+          rappel_le?: string | null
+          recurrence?: string | null
+          statut?: Database["public"]["Enums"]["statut_tache"]
+          titre: string
+          updated_at?: string
+        }
+        Update: {
+          assignee_id?: string | null
+          cabinet_id?: string
+          categorie?: string | null
+          created_at?: string
+          description?: string | null
+          echeance?: string | null
+          fait_le?: string | null
+          id?: string
+          intervention_id?: string | null
+          patient_id?: string | null
+          priorite?: number
+          rappel_le?: string | null
+          recurrence?: string | null
+          statut?: Database["public"]["Enums"]["statut_tache"]
+          titre?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "taches_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
+            referencedRelation: "soignants"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "taches_cabinet_id_fkey"
+            columns: ["cabinet_id"]
+            isOneToOne: false
+            referencedRelation: "cabinets"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "taches_intervention_id_fkey"
+            columns: ["intervention_id"]
+            isOneToOne: false
+            referencedRelation: "interventions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "taches_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "patients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tournees: {
+        Row: {
+          cabinet_id: string
+          created_at: string
+          date: string
+          duree_estimee_min: number | null
+          duree_reelle_min: number | null
+          heure_debut: string
+          heure_fin: string
+          id: string
+          km_estimes: number | null
+          km_reels: number | null
+          notes: string | null
+          periode: Database["public"]["Enums"]["periode_tournee"]
+          soignant_id: string | null
+          statut: Database["public"]["Enums"]["statut_tournee"]
+          updated_at: string
+          verrouillee: boolean
+        }
+        Insert: {
+          cabinet_id: string
+          created_at?: string
+          date: string
+          duree_estimee_min?: number | null
+          duree_reelle_min?: number | null
+          heure_debut?: string
+          heure_fin?: string
+          id?: string
+          km_estimes?: number | null
+          km_reels?: number | null
+          notes?: string | null
+          periode?: Database["public"]["Enums"]["periode_tournee"]
+          soignant_id?: string | null
+          statut?: Database["public"]["Enums"]["statut_tournee"]
+          updated_at?: string
+          verrouillee?: boolean
+        }
+        Update: {
+          cabinet_id?: string
+          created_at?: string
+          date?: string
+          duree_estimee_min?: number | null
+          duree_reelle_min?: number | null
+          heure_debut?: string
+          heure_fin?: string
+          id?: string
+          km_estimes?: number | null
+          km_reels?: number | null
+          notes?: string | null
+          periode?: Database["public"]["Enums"]["periode_tournee"]
+          soignant_id?: string | null
+          statut?: Database["public"]["Enums"]["statut_tournee"]
+          updated_at?: string
+          verrouillee?: boolean
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tournees_cabinet_id_fkey"
+            columns: ["cabinet_id"]
+            isOneToOne: false
+            referencedRelation: "cabinets"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tournees_soignant_id_fkey"
+            columns: ["soignant_id"]
+            isOneToOne: false
+            referencedRelation: "soignants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      transmissions: {
+        Row: {
+          audio_duree_s: number | null
+          audio_path: string | null
+          auteur_id: string | null
+          cabinet_id: string
+          corrige_transmission_id: string | null
+          created_at: string
+          gravite: Database["public"]["Enums"]["gravite"]
+          id: string
+          intervention_id: string | null
+          lu_par: string[]
+          patient_id: string | null
+          texte: string | null
+          transcription: string | null
+          type: Database["public"]["Enums"]["type_transmission"]
+          visible_medecin: boolean
+        }
+        Insert: {
+          audio_duree_s?: number | null
+          audio_path?: string | null
+          auteur_id?: string | null
+          cabinet_id: string
+          corrige_transmission_id?: string | null
+          created_at?: string
+          gravite?: Database["public"]["Enums"]["gravite"]
+          id?: string
+          intervention_id?: string | null
+          lu_par?: string[]
+          patient_id?: string | null
+          texte?: string | null
+          transcription?: string | null
+          type?: Database["public"]["Enums"]["type_transmission"]
+          visible_medecin?: boolean
+        }
+        Update: {
+          audio_duree_s?: number | null
+          audio_path?: string | null
+          auteur_id?: string | null
+          cabinet_id?: string
+          corrige_transmission_id?: string | null
+          created_at?: string
+          gravite?: Database["public"]["Enums"]["gravite"]
+          id?: string
+          intervention_id?: string | null
+          lu_par?: string[]
+          patient_id?: string | null
+          texte?: string | null
+          transcription?: string | null
+          type?: Database["public"]["Enums"]["type_transmission"]
+          visible_medecin?: boolean
+        }
+        Relationships: [
+          {
+            foreignKeyName: "transmissions_auteur_id_fkey"
+            columns: ["auteur_id"]
+            isOneToOne: false
+            referencedRelation: "soignants"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "transmissions_cabinet_id_fkey"
+            columns: ["cabinet_id"]
+            isOneToOne: false
+            referencedRelation: "cabinets"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "transmissions_corrige_transmission_id_fkey"
+            columns: ["corrige_transmission_id"]
+            isOneToOne: false
+            referencedRelation: "transmissions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "transmissions_intervention_id_fkey"
+            columns: ["intervention_id"]
+            isOneToOne: false
+            referencedRelation: "interventions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "transmissions_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "patients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       zones_cpam: {
         Row: {
           cabinet_id: string
@@ -774,6 +1917,7 @@ export type Database = {
     Enums: {
       app_role: "admin" | "titulaire" | "associee" | "remplacante"
       civilite: "M" | "Mme" | "Autre"
+      gravite: "info" | "attention" | "urgent"
       lettre_cle:
         | "AMI"
         | "AIS"
@@ -787,8 +1931,42 @@ export type Database = {
         | "IK"
         | "MAJ"
         | "AUTRE"
+      periode_tournee: "matin" | "soir" | "nuit" | "journee"
       statut_dossier: "actif" | "en_pause" | "termine" | "archive"
+      statut_facture:
+        | "brouillon"
+        | "a_envoyer"
+        | "envoyee"
+        | "payee"
+        | "partielle"
+        | "rejetee"
+        | "litige"
+        | "annulee"
+      statut_intervention:
+        | "planifie"
+        | "en_route"
+        | "en_cours"
+        | "realise"
+        | "absent"
+        | "refuse"
+        | "annule"
+        | "a_replanifier"
       statut_ordonnance: "a_recuperer" | "valide" | "expiree" | "annulee"
+      statut_tache: "a_faire" | "en_cours" | "faite" | "annulee"
+      statut_tournee: "brouillon" | "validee" | "en_cours" | "terminee"
+      type_document:
+        | "ordonnance"
+        | "compte_rendu"
+        | "photo_plaie"
+        | "consentement"
+        | "resultat"
+        | "autre"
+      type_transmission:
+        | "observation"
+        | "alerte"
+        | "consigne"
+        | "relais"
+        | "debrief"
       zone_statut: "autorisee" | "peripherie" | "exclue"
     }
     CompositeTypes: {
@@ -919,6 +2097,7 @@ export const Constants = {
     Enums: {
       app_role: ["admin", "titulaire", "associee", "remplacante"],
       civilite: ["M", "Mme", "Autre"],
+      gravite: ["info", "attention", "urgent"],
       lettre_cle: [
         "AMI",
         "AIS",
@@ -933,8 +2112,46 @@ export const Constants = {
         "MAJ",
         "AUTRE",
       ],
+      periode_tournee: ["matin", "soir", "nuit", "journee"],
       statut_dossier: ["actif", "en_pause", "termine", "archive"],
+      statut_facture: [
+        "brouillon",
+        "a_envoyer",
+        "envoyee",
+        "payee",
+        "partielle",
+        "rejetee",
+        "litige",
+        "annulee",
+      ],
+      statut_intervention: [
+        "planifie",
+        "en_route",
+        "en_cours",
+        "realise",
+        "absent",
+        "refuse",
+        "annule",
+        "a_replanifier",
+      ],
       statut_ordonnance: ["a_recuperer", "valide", "expiree", "annulee"],
+      statut_tache: ["a_faire", "en_cours", "faite", "annulee"],
+      statut_tournee: ["brouillon", "validee", "en_cours", "terminee"],
+      type_document: [
+        "ordonnance",
+        "compte_rendu",
+        "photo_plaie",
+        "consentement",
+        "resultat",
+        "autre",
+      ],
+      type_transmission: [
+        "observation",
+        "alerte",
+        "consigne",
+        "relais",
+        "debrief",
+      ],
       zone_statut: ["autorisee", "peripherie", "exclue"],
     },
   },
