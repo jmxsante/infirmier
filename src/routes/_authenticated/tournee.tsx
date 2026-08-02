@@ -91,7 +91,7 @@ function Tournee() {
       const deja = new Set((existantes ?? []).map((i) => `${i.plan_id}|${i.periode}`));
 
       const lignes = eligibles.flatMap((p) =>
-        (p.periodes.length > 0 ? p.periodes : ["matin"]).flatMap((periode) => {
+        (p.periodes.length > 0 ? p.periodes : (["matin"] as Periode[])).flatMap((periode) => {
           if (deja.has(`${p.id}|${periode}`)) return [];
           const heure =
             p.heure_cible ??
