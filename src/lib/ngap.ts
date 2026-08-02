@@ -127,8 +127,8 @@ const arrondi = (n: number) => Math.round(n * 100) / 100;
 
 function estNuit(heure?: string): "aucune" | "nuit" | "nuit_profonde" {
   if (!heure) return "aucune";
-  const [h] = heure.split(":").map(Number);
-  if (Number.isNaN(h)) return "aucune";
+  const h = Number(heure.split(":")[0]);
+  if (!Number.isFinite(h)) return "aucune";
   if (h >= 23 || h < 5) return "nuit_profonde";
   if (h >= 20 || h < 8) return "nuit";
   return "aucune";
