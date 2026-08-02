@@ -1903,6 +1903,16 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      creer_cabinet: {
+        Args: {
+          p_adresse_ligne1?: string
+          p_code_postal?: string
+          p_nom: string
+          p_telephone?: string
+          p_ville?: string
+        }
+        Returns: string
+      }
       current_cabinet_id: { Args: never; Returns: string }
       current_soignant_id: { Args: never; Returns: string }
       has_role: {
@@ -1913,6 +1923,30 @@ export type Database = {
         Returns: boolean
       }
       is_cabinet_member: { Args: { _cabinet_id: string }; Returns: boolean }
+      mon_profil: {
+        Args: never
+        Returns: {
+          actif: boolean
+          cabinet_id: string | null
+          couleur: string
+          created_at: string
+          email: string | null
+          id: string
+          nom: string
+          numero_adeli: string | null
+          numero_rpps: string | null
+          prenom: string
+          telephone: string | null
+          updated_at: string
+          user_id: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "soignants"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
     }
     Enums: {
       app_role: "admin" | "titulaire" | "associee" | "remplacante"
