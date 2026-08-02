@@ -69,7 +69,7 @@ function Tournee() {
   const generer = useMutation({
     mutationFn: async () => {
       if (!cabinetId) throw new Error("Cabinet introuvable");
-      const jour = JOURS[new Date(`${date}T12:00:00`).getDay()]!;
+      const jour = new Date(`${date}T12:00:00`).getDay();
 
       const { data: plans, error } = await supabase
         .from("plans_de_soins")
