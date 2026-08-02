@@ -12,7 +12,7 @@ export const Route = createFileRoute("/")({
       { property: "og:title", content: "Cabinet — le poste de pilotage des infirmiers libéraux" },
       {
         property: "og:description",
-        content: "Tournées, dossiers patients et cotation NGAP réunis dans une application claire.",
+        content: "Tournées, dossiers patients, cotation NGAP et facturation : tout le quotidien d'un cabinet infirmier libéral, dans une seule application claire.",
       },
     ],
   }),
