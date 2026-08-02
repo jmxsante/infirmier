@@ -201,7 +201,7 @@ function Tournee() {
         <ol className="space-y-3">
           {liste.map((i) => {
             const p = i.patients;
-            const statut = STATUTS[i.statut] ?? STATUTS.planifie!;
+            const statut = STATUTS[i.statut] ?? STATUTS["planifie"]!;
             return (
               <li key={i.id} className="carte-clinique p-4">
                 <div className="flex flex-wrap items-start justify-between gap-3">
