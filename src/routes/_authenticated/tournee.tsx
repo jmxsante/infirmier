@@ -43,7 +43,7 @@ const STATUTS: Record<string, { label: string; classe: string }> = {
   a_replanifier: { label: "À replanifier", classe: "bg-destructive text-destructive-foreground" },
 };
 
-const JOURS = ["dimanche", "lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi"];
+type Periode = "matin" | "soir" | "nuit" | "journee";
 
 function Tournee() {
   const { cabinetId, profil } = useCabinet();
