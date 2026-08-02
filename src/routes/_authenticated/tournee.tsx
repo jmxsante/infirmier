@@ -131,8 +131,8 @@ function Tournee() {
   const changerStatut = useMutation({
     mutationFn: async ({ id, statut }: { id: string; statut: string }) => {
       const patch: Record<string, unknown> = { statut };
-      if (statut === "en_cours") patch.debut_reel = new Date().toISOString();
-      if (statut === "realise") patch.fin_reelle = new Date().toISOString();
+      if (statut === "en_cours") patch["debut_reel"] = new Date().toISOString();
+      if (statut === "realise") patch["fin_reelle"] = new Date().toISOString();
       const { error } = await supabase
         .from("interventions")
         .update(patch as never)
