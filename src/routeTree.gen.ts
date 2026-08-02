@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedBienvenueRouteImport } from './routes/_authenticated/bienvenue'
+import { Route as AuthenticatedTourneeRouteImport } from './routes/_authenticated/tournee'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -33,16 +34,23 @@ const AuthenticatedBienvenueRoute = AuthenticatedBienvenueRouteImport.update({
   path: '/bienvenue',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedTourneeRoute = AuthenticatedTourneeRouteImport.update({
+  id: '/tournee',
+  path: '/tournee',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/bienvenue': typeof AuthenticatedBienvenueRoute
+  '/tournee': typeof AuthenticatedTourneeRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/bienvenue': typeof AuthenticatedBienvenueRoute
+  '/tournee': typeof AuthenticatedTourneeRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -50,14 +58,20 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/_authenticated/bienvenue': typeof AuthenticatedBienvenueRoute
+  '/_authenticated/tournee': typeof AuthenticatedTourneeRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/auth' | '/bienvenue'
+  fullPaths: '/' | '/auth' | '/bienvenue' | '/tournee'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/auth' | '/bienvenue'
+  to: '/' | '/auth' | '/bienvenue' | '/tournee'
   id:
-    '__root__' | '/' | '/_authenticated' | '/auth' | '/_authenticated/bienvenue'
+    | '__root__'
+    | '/'
+    | '/_authenticated'
+    | '/auth'
+    | '/_authenticated/bienvenue'
+    | '/_authenticated/tournee'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -96,15 +110,24 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedBienvenueRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/tournee': {
+      id: '/_authenticated/tournee'
+      path: '/tournee'
+      fullPath: '/tournee'
+      preLoaderRoute: typeof AuthenticatedTourneeRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedBienvenueRoute: typeof AuthenticatedBienvenueRoute
+  AuthenticatedTourneeRoute: typeof AuthenticatedTourneeRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedBienvenueRoute: AuthenticatedBienvenueRoute,
+  AuthenticatedTourneeRoute: AuthenticatedTourneeRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
