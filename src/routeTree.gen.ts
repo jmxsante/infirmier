@@ -14,6 +14,7 @@ import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedBienvenueRouteImport } from './routes/_authenticated/bienvenue'
 import { Route as AuthenticatedTourneeRouteImport } from './routes/_authenticated/tournee'
+import { Route as AuthenticatedPatientsIndexRouteImport } from './routes/_authenticated/patients.index'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -39,18 +40,26 @@ const AuthenticatedTourneeRoute = AuthenticatedTourneeRouteImport.update({
   path: '/tournee',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedPatientsIndexRoute =
+  AuthenticatedPatientsIndexRouteImport.update({
+    id: '/patients/',
+    path: '/patients/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/bienvenue': typeof AuthenticatedBienvenueRoute
   '/tournee': typeof AuthenticatedTourneeRoute
+  '/patients/': typeof AuthenticatedPatientsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/bienvenue': typeof AuthenticatedBienvenueRoute
   '/tournee': typeof AuthenticatedTourneeRoute
+  '/patients': typeof AuthenticatedPatientsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -59,12 +68,13 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/_authenticated/bienvenue': typeof AuthenticatedBienvenueRoute
   '/_authenticated/tournee': typeof AuthenticatedTourneeRoute
+  '/_authenticated/patients/': typeof AuthenticatedPatientsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/auth' | '/bienvenue' | '/tournee'
+  fullPaths: '/' | '/auth' | '/bienvenue' | '/tournee' | '/patients/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/auth' | '/bienvenue' | '/tournee'
+  to: '/' | '/auth' | '/bienvenue' | '/tournee' | '/patients'
   id:
     | '__root__'
     | '/'
@@ -72,6 +82,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/_authenticated/bienvenue'
     | '/_authenticated/tournee'
+    | '/_authenticated/patients/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -117,17 +128,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedTourneeRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/patients/': {
+      id: '/_authenticated/patients/'
+      path: '/patients'
+      fullPath: '/patients/'
+      preLoaderRoute: typeof AuthenticatedPatientsIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedBienvenueRoute: typeof AuthenticatedBienvenueRoute
   AuthenticatedTourneeRoute: typeof AuthenticatedTourneeRoute
+  AuthenticatedPatientsIndexRoute: typeof AuthenticatedPatientsIndexRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedBienvenueRoute: AuthenticatedBienvenueRoute,
   AuthenticatedTourneeRoute: AuthenticatedTourneeRoute,
+  AuthenticatedPatientsIndexRoute: AuthenticatedPatientsIndexRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =

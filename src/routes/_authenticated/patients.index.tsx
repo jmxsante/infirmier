@@ -20,7 +20,7 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import { useCabinet } from "@/hooks/use-cabinet";
 
-export const Route = createFileRoute("/_authenticated/patients")({
+export const Route = createFileRoute("/_authenticated/patients/")({
   head: () => ({
     meta: [
       { title: "Patients — Cabinet" },
