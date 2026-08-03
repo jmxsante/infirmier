@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AuthenticatedActesRouteImport } from './routes/_authenticated/actes'
 import { Route as AuthenticatedBienvenueRouteImport } from './routes/_authenticated/bienvenue'
 import { Route as AuthenticatedTourneeRouteImport } from './routes/_authenticated/tournee'
 import { Route as AuthenticatedPatientsIndexRouteImport } from './routes/_authenticated/patients.index'
@@ -30,6 +31,11 @@ const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedActesRoute = AuthenticatedActesRouteImport.update({
+  id: '/actes',
+  path: '/actes',
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedBienvenueRoute = AuthenticatedBienvenueRouteImport.update({
   id: '/bienvenue',
@@ -57,6 +63,7 @@ const AuthenticatedPatientsPatientIdRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/actes': typeof AuthenticatedActesRoute
   '/bienvenue': typeof AuthenticatedBienvenueRoute
   '/tournee': typeof AuthenticatedTourneeRoute
   '/patients/$patientId': typeof AuthenticatedPatientsPatientIdRoute
@@ -65,6 +72,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/actes': typeof AuthenticatedActesRoute
   '/bienvenue': typeof AuthenticatedBienvenueRoute
   '/tournee': typeof AuthenticatedTourneeRoute
   '/patients/$patientId': typeof AuthenticatedPatientsPatientIdRoute
@@ -75,6 +83,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
+  '/_authenticated/actes': typeof AuthenticatedActesRoute
   '/_authenticated/bienvenue': typeof AuthenticatedBienvenueRoute
   '/_authenticated/tournee': typeof AuthenticatedTourneeRoute
   '/_authenticated/patients/$patientId': typeof AuthenticatedPatientsPatientIdRoute
@@ -85,6 +94,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/auth'
+    | '/actes'
     | '/bienvenue'
     | '/tournee'
     | '/patients/$patientId'
@@ -93,6 +103,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/auth'
+    | '/actes'
     | '/bienvenue'
     | '/tournee'
     | '/patients/$patientId'
@@ -102,6 +113,7 @@ export interface FileRouteTypes {
     | '/'
     | '/_authenticated'
     | '/auth'
+    | '/_authenticated/actes'
     | '/_authenticated/bienvenue'
     | '/_authenticated/tournee'
     | '/_authenticated/patients/$patientId'
@@ -137,6 +149,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/actes': {
+      id: '/_authenticated/actes'
+      path: '/actes'
+      fullPath: '/actes'
+      preLoaderRoute: typeof AuthenticatedActesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/bienvenue': {
       id: '/_authenticated/bienvenue'
       path: '/bienvenue'
@@ -169,6 +188,7 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthenticatedRouteRouteChildren {
+  AuthenticatedActesRoute: typeof AuthenticatedActesRoute
   AuthenticatedBienvenueRoute: typeof AuthenticatedBienvenueRoute
   AuthenticatedTourneeRoute: typeof AuthenticatedTourneeRoute
   AuthenticatedPatientsPatientIdRoute: typeof AuthenticatedPatientsPatientIdRoute
@@ -176,6 +196,7 @@ interface AuthenticatedRouteRouteChildren {
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedActesRoute: AuthenticatedActesRoute,
   AuthenticatedBienvenueRoute: AuthenticatedBienvenueRoute,
   AuthenticatedTourneeRoute: AuthenticatedTourneeRoute,
   AuthenticatedPatientsPatientIdRoute: AuthenticatedPatientsPatientIdRoute,
