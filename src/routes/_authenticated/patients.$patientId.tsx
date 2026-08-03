@@ -82,8 +82,12 @@ function Dossier() {
               <Ligne label="Observations" valeur={p.observations} />
             </dl>
           </section>
+
+          <PlansDeSoins patientId={patientId} />
+          <Transmissions patientId={patientId} />
         </div>
       )}
+
     </AppShell>
   );
 }
