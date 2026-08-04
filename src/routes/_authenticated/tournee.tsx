@@ -57,7 +57,7 @@ function Tournee() {
       const { data, error } = await supabase
         .from("interventions")
         .select(
-          "id, date, periode, debut_prevu, fin_prevue, statut, ordre, notes, patients(id, nom, prenom, adresse_ligne1, code_postal, ville, acces_etage, acces_code)",
+          "id, date, periode, debut_prevu, fin_prevue, statut, ordre, notes, plan_id, patients(id, nom, prenom, adresse_ligne1, code_postal, ville, acces_etage, acces_code)",
         )
         .eq("date", date)
         .order("debut_prevu", { ascending: true });
