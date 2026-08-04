@@ -3,7 +3,9 @@ import { useQueryClient } from "@tanstack/react-query";
 import {
   CalendarClock,
   LogOut,
+  Receipt,
   Route as RouteIcon,
+
   Stethoscope,
   Users,
   type LucideIcon,
