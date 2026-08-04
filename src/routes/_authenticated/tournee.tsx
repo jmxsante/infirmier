@@ -242,11 +242,20 @@ function Tournee() {
                         </Button>
                         <Button
                           size="sm"
-                          onClick={() => changerStatut.mutate({ id: i.id, statut: "realise" })}
+                          onClick={() =>
+                            setACloturer({
+                              id: i.id,
+                              patient_id: i.patients?.id ?? "",
+                              plan_id: i.plan_id,
+                              debut_prevu: i.debut_prevu,
+                              patient: p ? `${p.prenom} ${p.nom}` : undefined,
+                            })
+                          }
                         >
                           <CheckCircle2 className="size-4" />
                           Terminer
                         </Button>
+
                       </>
                     ) : (
                       <Button
