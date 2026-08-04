@@ -6,6 +6,11 @@ import { fr } from "date-fns/locale";
 import { CheckCircle2, CircleDot, Clock, MapPin, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import { AppShell } from "@/components/app-shell";
+import {
+  ClotureIntervention,
+  type InterventionAClore,
+} from "@/components/cloture-intervention";
+
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -49,6 +54,8 @@ function Tournee() {
   const { cabinetId, profil } = useCabinet();
   const queryClient = useQueryClient();
   const [date, setDate] = useState(() => format(new Date(), "yyyy-MM-dd"));
+  const [aCloturer, setACloturer] = useState<InterventionAClore | null>(null);
+
 
   const interventions = useQuery({
     queryKey: ["interventions", date, cabinetId],
@@ -57,7 +64,7 @@ function Tournee() {
       const { data, error } = await supabase
         .from("interventions")
         .select(
-          "id, date, periode, debut_prevu, fin_prevue, statut, ordre, notes, patients(id, nom, prenom, adresse_ligne1, code_postal, ville, acces_etage, acces_code)",
+          "id, date, periode, debut_prevu, fin_prevue, statut, ordre, notes, plan_id, patients(id, nom, prenom, adresse_ligne1, code_postal, ville, acces_etage, acces_code)",
         )
         .eq("date", date)
         .order("debut_prevu", { ascending: true });
@@ -242,11 +249,20 @@ function Tournee() {
                         </Button>
                         <Button
                           size="sm"
-                          onClick={() => changerStatut.mutate({ id: i.id, statut: "realise" })}
+                          onClick={() =>
+                            setACloturer({
+                              id: i.id,
+                              patient_id: i.patients?.id ?? "",
+                              plan_id: i.plan_id,
+                              debut_prevu: i.debut_prevu,
+                              patient: p ? `${p.prenom} ${p.nom}` : undefined,
+                            })
+                          }
                         >
                           <CheckCircle2 className="size-4" />
                           Terminer
                         </Button>
+
                       </>
                     ) : (
                       <Button
@@ -273,6 +289,12 @@ function Tournee() {
           })}
         </ol>
       )}
+
+      <ClotureIntervention
+        intervention={aCloturer}
+        onOuvertChange={(o) => !o && setACloturer(null)}
+      />
     </AppShell>
+
   );
 }

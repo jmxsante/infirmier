@@ -14,6 +14,7 @@ import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedActesRouteImport } from './routes/_authenticated/actes'
 import { Route as AuthenticatedBienvenueRouteImport } from './routes/_authenticated/bienvenue'
+import { Route as AuthenticatedFacturationRouteImport } from './routes/_authenticated/facturation'
 import { Route as AuthenticatedTourneeRouteImport } from './routes/_authenticated/tournee'
 import { Route as AuthenticatedPatientsIndexRouteImport } from './routes/_authenticated/patients.index'
 import { Route as AuthenticatedPatientsPatientIdRouteImport } from './routes/_authenticated/patients.$patientId'
@@ -42,6 +43,12 @@ const AuthenticatedBienvenueRoute = AuthenticatedBienvenueRouteImport.update({
   path: '/bienvenue',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedFacturationRoute =
+  AuthenticatedFacturationRouteImport.update({
+    id: '/facturation',
+    path: '/facturation',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedTourneeRoute = AuthenticatedTourneeRouteImport.update({
   id: '/tournee',
   path: '/tournee',
@@ -65,6 +72,7 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/actes': typeof AuthenticatedActesRoute
   '/bienvenue': typeof AuthenticatedBienvenueRoute
+  '/facturation': typeof AuthenticatedFacturationRoute
   '/tournee': typeof AuthenticatedTourneeRoute
   '/patients/$patientId': typeof AuthenticatedPatientsPatientIdRoute
   '/patients/': typeof AuthenticatedPatientsIndexRoute
@@ -74,6 +82,7 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/actes': typeof AuthenticatedActesRoute
   '/bienvenue': typeof AuthenticatedBienvenueRoute
+  '/facturation': typeof AuthenticatedFacturationRoute
   '/tournee': typeof AuthenticatedTourneeRoute
   '/patients/$patientId': typeof AuthenticatedPatientsPatientIdRoute
   '/patients': typeof AuthenticatedPatientsIndexRoute
@@ -85,6 +94,7 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/_authenticated/actes': typeof AuthenticatedActesRoute
   '/_authenticated/bienvenue': typeof AuthenticatedBienvenueRoute
+  '/_authenticated/facturation': typeof AuthenticatedFacturationRoute
   '/_authenticated/tournee': typeof AuthenticatedTourneeRoute
   '/_authenticated/patients/$patientId': typeof AuthenticatedPatientsPatientIdRoute
   '/_authenticated/patients/': typeof AuthenticatedPatientsIndexRoute
@@ -96,6 +106,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/actes'
     | '/bienvenue'
+    | '/facturation'
     | '/tournee'
     | '/patients/$patientId'
     | '/patients/'
@@ -105,6 +116,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/actes'
     | '/bienvenue'
+    | '/facturation'
     | '/tournee'
     | '/patients/$patientId'
     | '/patients'
@@ -115,6 +127,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/_authenticated/actes'
     | '/_authenticated/bienvenue'
+    | '/_authenticated/facturation'
     | '/_authenticated/tournee'
     | '/_authenticated/patients/$patientId'
     | '/_authenticated/patients/'
@@ -163,6 +176,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedBienvenueRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/facturation': {
+      id: '/_authenticated/facturation'
+      path: '/facturation'
+      fullPath: '/facturation'
+      preLoaderRoute: typeof AuthenticatedFacturationRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/tournee': {
       id: '/_authenticated/tournee'
       path: '/tournee'
@@ -190,6 +210,7 @@ declare module '@tanstack/react-router' {
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedActesRoute: typeof AuthenticatedActesRoute
   AuthenticatedBienvenueRoute: typeof AuthenticatedBienvenueRoute
+  AuthenticatedFacturationRoute: typeof AuthenticatedFacturationRoute
   AuthenticatedTourneeRoute: typeof AuthenticatedTourneeRoute
   AuthenticatedPatientsPatientIdRoute: typeof AuthenticatedPatientsPatientIdRoute
   AuthenticatedPatientsIndexRoute: typeof AuthenticatedPatientsIndexRoute
@@ -198,6 +219,7 @@ interface AuthenticatedRouteRouteChildren {
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedActesRoute: AuthenticatedActesRoute,
   AuthenticatedBienvenueRoute: AuthenticatedBienvenueRoute,
+  AuthenticatedFacturationRoute: AuthenticatedFacturationRoute,
   AuthenticatedTourneeRoute: AuthenticatedTourneeRoute,
   AuthenticatedPatientsPatientIdRoute: AuthenticatedPatientsPatientIdRoute,
   AuthenticatedPatientsIndexRoute: AuthenticatedPatientsIndexRoute,

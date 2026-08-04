@@ -3,7 +3,9 @@ import { useQueryClient } from "@tanstack/react-query";
 import {
   CalendarClock,
   LogOut,
+  Receipt,
   Route as RouteIcon,
+
   Stethoscope,
   Users,
   type LucideIcon,
@@ -16,7 +18,9 @@ const NAV: { to: string; label: string; icon: LucideIcon }[] = [
   { to: "/tournee", label: "Tournée", icon: RouteIcon },
   { to: "/patients", label: "Patients", icon: Users },
   { to: "/actes", label: "Actes & cotation", icon: Stethoscope },
+  { to: "/facturation", label: "Facturation", icon: Receipt },
 ];
+
 
 export function AppShell({
   titre,
