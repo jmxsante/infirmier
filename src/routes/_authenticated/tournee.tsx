@@ -49,6 +49,8 @@ function Tournee() {
   const { cabinetId, profil } = useCabinet();
   const queryClient = useQueryClient();
   const [date, setDate] = useState(() => format(new Date(), "yyyy-MM-dd"));
+  const [aCloturer, setACloturer] = useState<InterventionAClore | null>(null);
+
 
   const interventions = useQuery({
     queryKey: ["interventions", date, cabinetId],
