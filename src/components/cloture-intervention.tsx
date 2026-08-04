@@ -26,7 +26,7 @@ export interface InterventionAClore {
   patient_id: string;
   plan_id: string | null;
   debut_prevu: string;
-  patient?: string;
+  patient?: string | undefined;
 }
 
 interface Selection extends ActeCatalogue {
