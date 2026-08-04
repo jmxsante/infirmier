@@ -289,6 +289,12 @@ function Tournee() {
           })}
         </ol>
       )}
+
+      <ClotureIntervention
+        intervention={aCloturer}
+        onOuvertChange={(o) => !o && setACloturer(null)}
+      />
     </AppShell>
+
   );
 }
