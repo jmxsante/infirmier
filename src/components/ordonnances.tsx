@@ -110,7 +110,7 @@ export function Ordonnances({ patientId }: { patientId: string }) {
         chemin = cheminStockage(cabinetId, patientId, fichier.name);
         const { error } = await supabase.storage
           .from("dossiers")
-          .upload(chemin, fichier, { contentType: fichier.type || undefined, upsert: false });
+          .upload(chemin, fichier, fichier.type ? { contentType: fichier.type } : {});
         if (error) throw new Error(`Dépôt du scan impossible : ${error.message}`);
       }
 
@@ -169,7 +169,10 @@ export function Ordonnances({ patientId }: { patientId: string }) {
 
   async function ouvrirScan(chemin: string) {
     const { data, error } = await supabase.storage.from("dossiers").createSignedUrl(chemin, 120);
-    if (error || !data) return toast.error("Document indisponible.");
+    if (error || !data) {
+      toast.error("Document indisponible.");
+      return;
+    }
     window.open(data.signedUrl, "_blank", "noopener,noreferrer");
   }
 
