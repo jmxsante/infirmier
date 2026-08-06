@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { CalendarDays, Plus, Power, Trash2 } from "lucide-react";
+import { AlertTriangle, CalendarDays, FileCheck2, Plus, Power, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -16,11 +16,19 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { SelecteurActes } from "@/components/selecteur-actes";
 import { supabase } from "@/integrations/supabase/client";
 import { useCabinet } from "@/hooks/use-cabinet";
 import { type ActeCatalogue, versActeACoter } from "@/lib/catalogue";
 import { calculerCotation, euros } from "@/lib/ngap";
+import { couvreLaPeriode, statutEffectif, type StatutOrdonnance } from "@/lib/ordonnances";
 import { cn } from "@/lib/utils";
 
 const JOURS = [
