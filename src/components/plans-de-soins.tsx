@@ -65,6 +65,7 @@ export function PlansDeSoins({ patientId }: { patientId: string }) {
   const [duree, setDuree] = useState(15);
   const [protocole, setProtocole] = useState("");
   const [actes, setActes] = useState<(ActeCatalogue & { quantite: number })[]>([]);
+  const [ordonnanceId, setOrdonnanceId] = useState<string>("aucune");
 
   const plans = useQuery({
     queryKey: ["plans-de-soins", patientId],
@@ -72,7 +73,7 @@ export function PlansDeSoins({ patientId }: { patientId: string }) {
       const { data, error } = await supabase
         .from("plans_de_soins")
         .select(
-          "id, libelle, date_debut, date_fin, jours_semaine, periodes, heure_cible, duree_minutes, protocole, actif, plan_soins_actes(id, quantite, catalogue_actes(id, code, libelle, lettre_cle, coefficient))",
+          "id, libelle, date_debut, date_fin, jours_semaine, periodes, heure_cible, duree_minutes, protocole, actif, ordonnance_id, ordonnances:ordonnance_id(id, statut, date_debut, date_fin, date_prescription, fichier_path), plan_soins_actes(id, quantite, catalogue_actes(id, code, libelle, lettre_cle, coefficient))",
         )
         .eq("patient_id", patientId)
         .order("created_at", { ascending: false });
@@ -80,6 +81,28 @@ export function PlansDeSoins({ patientId }: { patientId: string }) {
       return data;
     },
   });
+
+  const ordonnances = useQuery({
+    queryKey: ["ordonnances-liables", patientId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("ordonnances")
+        .select("id, statut, date_prescription, date_debut, date_fin, fichier_path")
+        .eq("patient_id", patientId)
+        .order("date_prescription", { ascending: false });
+      if (error) throw new Error(error.message);
+      return data ?? [];
+    },
+  });
+
+  const ordonnanceChoisie = (ordonnances.data ?? []).find((o) => o.id === ordonnanceId) ?? null;
+  const couverture = ordonnanceChoisie
+    ? couvreLaPeriode(
+        { ...ordonnanceChoisie, statut: ordonnanceChoisie.statut as StatutOrdonnance },
+        dateDebut,
+        dateFin || null,
+      )
+    : null;
 
   function reinitialiser() {
     setLibelle("");
@@ -90,7 +113,9 @@ export function PlansDeSoins({ patientId }: { patientId: string }) {
     setDuree(15);
     setProtocole("");
     setActes([]);
+    setOrdonnanceId("aucune");
   }
+
 
   const creation = useMutation({
     mutationFn: async () => {
