@@ -29,6 +29,24 @@ import {
   type CotationFacturable,
   type StatutFacture,
 } from "@/lib/facturation";
+import {
+  csvFactures,
+  csvRecettes,
+  nomExport,
+  totauxExercice,
+  type FactureComptable,
+  type RecetteComptable,
+} from "@/lib/comptabilite";
+
+/** Déclenche le téléchargement d'un CSV côté navigateur. */
+function telecharger(nom: string, contenu: string) {
+  const url = URL.createObjectURL(new Blob([contenu], { type: "text/csv;charset=utf-8" }));
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = nom;
+  a.click();
+  URL.revokeObjectURL(url);
+}
 
 export const Route = createFileRoute("/_authenticated/facturation")({
   head: () => ({
