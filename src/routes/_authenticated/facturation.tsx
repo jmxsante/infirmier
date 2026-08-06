@@ -113,7 +113,7 @@ function Facturation() {
       const { data, error } = await supabase
         .from("factures")
         .select(
-          "id, numero, statut, total, montant_paye, part_amo, part_amc, part_patient, periode_debut, periode_fin, patients(nom, prenom)",
+          "id, numero, statut, total, montant_paye, part_amo, part_amc, part_patient, periode_debut, periode_fin, date_envoi, date_paiement, patients(nom, prenom)",
         )
         .order("created_at", { ascending: false })
         .limit(100);
@@ -121,6 +121,72 @@ function Facturation() {
       return data ?? [];
     },
   });
+
+  const paiements = useQuery({
+    queryKey: ["paiements", cabinetId],
+    enabled: !!cabinetId,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("paiements")
+        .select("id, montant, date_paiement, source, reference, factures(numero, patients(nom, prenom))")
+        .order("date_paiement", { ascending: true })
+        .limit(2000);
+      if (error) throw new Error(error.message);
+      return data ?? [];
+    },
+  });
+
+  const recettes: RecetteComptable[] = (paiements.data ?? []).map((p) => {
+    const f = p.factures as unknown as
+      | { numero: string; patients: { nom: string; prenom: string } | null }
+      | null;
+    return {
+      date_paiement: p.date_paiement,
+      numero: f?.numero ?? "—",
+      patient: f?.patients ? `${f.patients.prenom} ${f.patients.nom}` : "—",
+      source: p.source,
+      montant: Number(p.montant),
+      reference: p.reference,
+    };
+  });
+
+  const exercice = new Date().getFullYear();
+  const totalExercice = totauxExercice(recettes, exercice);
+
+  function exporterRecettes() {
+    if (recettes.length === 0) {
+      toast.error("Aucun encaissement à exporter.");
+      return;
+    }
+    telecharger(nomExport("livre-recettes", exercice), csvRecettes(recettes));
+    toast.success("Livre de recettes exporté.");
+  }
+
+  function exporterFactures() {
+    const lignes: FactureComptable[] = (factures.data ?? []).map((f) => {
+      const p = f.patients as unknown as { nom: string; prenom: string } | null;
+      return {
+        numero: f.numero,
+        patient: p ? `${p.prenom} ${p.nom}` : "—",
+        periode_debut: f.periode_debut,
+        periode_fin: f.periode_fin,
+        statut: LIBELLES_STATUT[f.statut as StatutFacture] ?? f.statut,
+        total: Number(f.total),
+        montant_paye: Number(f.montant_paye),
+        part_amo: Number(f.part_amo),
+        part_amc: Number(f.part_amc),
+        part_patient: Number(f.part_patient),
+        date_envoi: f.date_envoi,
+        date_paiement: f.date_paiement,
+      };
+    });
+    if (lignes.length === 0) {
+      toast.error("Aucune facture à exporter.");
+      return;
+    }
+    telecharger(nomExport("journal-factures", exercice), csvFactures(lignes));
+    toast.success("Journal des factures exporté.");
+  }
 
   const groupes = Object.values(
     (aFacturer.data ?? []).reduce<
