@@ -324,6 +324,7 @@ function Facturation() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["factures"] });
+      queryClient.invalidateQueries({ queryKey: ["paiements"] });
       toast.success("Paiement enregistré.");
       setPaiementPour(null);
       setMontant("");
