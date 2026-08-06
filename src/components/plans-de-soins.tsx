@@ -231,6 +231,38 @@ export function PlansDeSoins({ patientId }: { patientId: string }) {
                 </div>
               </div>
 
+              <div className="space-y-1.5">
+                <Label htmlFor="ordonnance">Ordonnance qui autorise ces soins</Label>
+                <Select value={ordonnanceId} onValueChange={setOrdonnanceId}>
+                  <SelectTrigger id="ordonnance">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="aucune">Aucune (soins sans prescription)</SelectItem>
+                    {(ordonnances.data ?? []).map((o) => (
+                      <SelectItem key={o.id} value={o.id}>
+                        {`Du ${o.date_prescription}`}
+                        {o.date_fin ? ` → ${o.date_fin}` : " (sans échéance)"}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {couverture === false ? (
+                  <p className="flex items-start gap-1.5 rounded-md bg-destructive/10 p-2 text-sm text-destructive">
+                    <AlertTriangle className="mt-0.5 size-4 shrink-0" />
+                    Cette ordonnance ne couvre pas toute la période du plan : les passages hors
+                    couverture ne seront pas facturables.
+                  </p>
+                ) : couverture === true ? (
+                  <p className="flex items-center gap-1.5 text-sm text-muted-foreground">
+                    <FileCheck2 className="size-4" />
+                    Période entièrement couverte par l'ordonnance.
+                  </p>
+                ) : null}
+              </div>
+
+
+
               <div>
                 <Label>Jours de passage</Label>
                 <div className="mt-2 flex flex-wrap gap-2">
