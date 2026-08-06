@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { CalendarDays, Plus, Power, Trash2 } from "lucide-react";
+import { AlertTriangle, CalendarDays, FileCheck2, Plus, Power, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -16,11 +16,19 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { SelecteurActes } from "@/components/selecteur-actes";
 import { supabase } from "@/integrations/supabase/client";
 import { useCabinet } from "@/hooks/use-cabinet";
 import { type ActeCatalogue, versActeACoter } from "@/lib/catalogue";
 import { calculerCotation, euros } from "@/lib/ngap";
+import { couvreLaPeriode, statutEffectif, type StatutOrdonnance } from "@/lib/ordonnances";
 import { cn } from "@/lib/utils";
 
 const JOURS = [
@@ -57,6 +65,7 @@ export function PlansDeSoins({ patientId }: { patientId: string }) {
   const [duree, setDuree] = useState(15);
   const [protocole, setProtocole] = useState("");
   const [actes, setActes] = useState<(ActeCatalogue & { quantite: number })[]>([]);
+  const [ordonnanceId, setOrdonnanceId] = useState<string>("aucune");
 
   const plans = useQuery({
     queryKey: ["plans-de-soins", patientId],
@@ -64,7 +73,7 @@ export function PlansDeSoins({ patientId }: { patientId: string }) {
       const { data, error } = await supabase
         .from("plans_de_soins")
         .select(
-          "id, libelle, date_debut, date_fin, jours_semaine, periodes, heure_cible, duree_minutes, protocole, actif, plan_soins_actes(id, quantite, catalogue_actes(id, code, libelle, lettre_cle, coefficient))",
+          "id, libelle, date_debut, date_fin, jours_semaine, periodes, heure_cible, duree_minutes, protocole, actif, ordonnance_id, ordonnances:ordonnance_id(id, statut, date_debut, date_fin, date_prescription, fichier_path), plan_soins_actes(id, quantite, catalogue_actes(id, code, libelle, lettre_cle, coefficient))",
         )
         .eq("patient_id", patientId)
         .order("created_at", { ascending: false });
@@ -72,6 +81,28 @@ export function PlansDeSoins({ patientId }: { patientId: string }) {
       return data;
     },
   });
+
+  const ordonnances = useQuery({
+    queryKey: ["ordonnances-liables", patientId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("ordonnances")
+        .select("id, statut, date_prescription, date_debut, date_fin, fichier_path")
+        .eq("patient_id", patientId)
+        .order("date_prescription", { ascending: false });
+      if (error) throw new Error(error.message);
+      return data ?? [];
+    },
+  });
+
+  const ordonnanceChoisie = (ordonnances.data ?? []).find((o) => o.id === ordonnanceId) ?? null;
+  const couverture = ordonnanceChoisie
+    ? couvreLaPeriode(
+        { ...ordonnanceChoisie, statut: ordonnanceChoisie.statut as StatutOrdonnance },
+        dateDebut,
+        dateFin || null,
+      )
+    : null;
 
   function reinitialiser() {
     setLibelle("");
@@ -82,7 +113,9 @@ export function PlansDeSoins({ patientId }: { patientId: string }) {
     setDuree(15);
     setProtocole("");
     setActes([]);
+    setOrdonnanceId("aucune");
   }
+
 
   const creation = useMutation({
     mutationFn: async () => {
@@ -93,6 +126,7 @@ export function PlansDeSoins({ patientId }: { patientId: string }) {
         .insert({
           cabinet_id: cabinetId,
           patient_id: patientId,
+          ordonnance_id: ordonnanceId === "aucune" ? null : ordonnanceId,
           libelle: libelle.trim() || "Plan de soins",
           date_debut: dateDebut,
           date_fin: dateFin || null,
@@ -196,6 +230,38 @@ export function PlansDeSoins({ patientId }: { patientId: string }) {
                   />
                 </div>
               </div>
+
+              <div className="space-y-1.5">
+                <Label htmlFor="ordonnance">Ordonnance qui autorise ces soins</Label>
+                <Select value={ordonnanceId} onValueChange={setOrdonnanceId}>
+                  <SelectTrigger id="ordonnance">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="aucune">Aucune (soins sans prescription)</SelectItem>
+                    {(ordonnances.data ?? []).map((o) => (
+                      <SelectItem key={o.id} value={o.id}>
+                        {`Du ${o.date_prescription}`}
+                        {o.date_fin ? ` → ${o.date_fin}` : " (sans échéance)"}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {couverture === false ? (
+                  <p className="flex items-start gap-1.5 rounded-md bg-destructive/10 p-2 text-sm text-destructive">
+                    <AlertTriangle className="mt-0.5 size-4 shrink-0" />
+                    Cette ordonnance ne couvre pas toute la période du plan : les passages hors
+                    couverture ne seront pas facturables.
+                  </p>
+                ) : couverture === true ? (
+                  <p className="flex items-center gap-1.5 text-sm text-muted-foreground">
+                    <FileCheck2 className="size-4" />
+                    Période entièrement couverte par l'ordonnance.
+                  </p>
+                ) : null}
+              </div>
+
+
 
               <div>
                 <Label>Jours de passage</Label>
@@ -368,7 +434,9 @@ export function PlansDeSoins({ patientId }: { patientId: string }) {
                     <Badge variant={p.actif ? "default" : "secondary"}>
                       {p.actif ? "Actif" : "Suspendu"}
                     </Badge>
+                    <BadgeOrdonnance plan={p} />
                   </div>
+
                   <p className="mt-1 flex items-center gap-1.5 text-sm text-muted-foreground">
                     <CalendarDays className="size-3.5" />
                     {p.jours_semaine.length === 7 || p.jours_semaine.length === 0
@@ -409,5 +477,55 @@ export function PlansDeSoins({ patientId }: { patientId: string }) {
         </ul>
       )}
     </section>
+  );
+}
+
+interface PlanOrdonnance {
+  date_debut: string;
+  date_fin: string | null;
+  ordonnances: {
+    statut: string;
+    date_debut: string | null;
+    date_fin: string | null;
+    fichier_path: string | null;
+  } | null;
+}
+
+/** Indique si le plan s'appuie sur une ordonnance valide couvrant toute sa période. */
+function BadgeOrdonnance({ plan }: { plan: PlanOrdonnance }) {
+  const o = plan.ordonnances;
+  if (!o)
+    return (
+      <Badge variant="outline" className="gap-1">
+        <AlertTriangle className="size-3" />
+        Sans ordonnance
+      </Badge>
+    );
+
+  const aujourdhui = new Date().toISOString().slice(0, 10);
+  const statut = statutEffectif({ ...o, statut: o.statut as StatutOrdonnance }, aujourdhui);
+  const couvre = couvreLaPeriode(
+    { ...o, statut: o.statut as StatutOrdonnance },
+    plan.date_debut,
+    plan.date_fin,
+  );
+
+  if (statut !== "valide" || !couvre)
+    return (
+      <Badge variant="destructive" className="gap-1">
+        <AlertTriangle className="size-3" />
+        {statut === "expiree"
+          ? "Ordonnance expirée"
+          : statut === "a_recuperer"
+            ? "Ordonnance à récupérer"
+            : "Couverture incomplète"}
+      </Badge>
+    );
+
+  return (
+    <Badge variant="secondary" className="gap-1">
+      <FileCheck2 className="size-3" />
+      Prescrit
+    </Badge>
   );
 }

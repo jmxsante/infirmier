@@ -15,6 +15,7 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedActesRouteImport } from './routes/_authenticated/actes'
 import { Route as AuthenticatedBienvenueRouteImport } from './routes/_authenticated/bienvenue'
 import { Route as AuthenticatedFacturationRouteImport } from './routes/_authenticated/facturation'
+import { Route as AuthenticatedPrescripteursRouteImport } from './routes/_authenticated/prescripteurs'
 import { Route as AuthenticatedTourneeRouteImport } from './routes/_authenticated/tournee'
 import { Route as AuthenticatedPatientsIndexRouteImport } from './routes/_authenticated/patients.index'
 import { Route as AuthenticatedPatientsPatientIdRouteImport } from './routes/_authenticated/patients.$patientId'
@@ -49,6 +50,12 @@ const AuthenticatedFacturationRoute =
     path: '/facturation',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedPrescripteursRoute =
+  AuthenticatedPrescripteursRouteImport.update({
+    id: '/prescripteurs',
+    path: '/prescripteurs',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedTourneeRoute = AuthenticatedTourneeRouteImport.update({
   id: '/tournee',
   path: '/tournee',
@@ -73,6 +80,7 @@ export interface FileRoutesByFullPath {
   '/actes': typeof AuthenticatedActesRoute
   '/bienvenue': typeof AuthenticatedBienvenueRoute
   '/facturation': typeof AuthenticatedFacturationRoute
+  '/prescripteurs': typeof AuthenticatedPrescripteursRoute
   '/tournee': typeof AuthenticatedTourneeRoute
   '/patients/$patientId': typeof AuthenticatedPatientsPatientIdRoute
   '/patients/': typeof AuthenticatedPatientsIndexRoute
@@ -83,6 +91,7 @@ export interface FileRoutesByTo {
   '/actes': typeof AuthenticatedActesRoute
   '/bienvenue': typeof AuthenticatedBienvenueRoute
   '/facturation': typeof AuthenticatedFacturationRoute
+  '/prescripteurs': typeof AuthenticatedPrescripteursRoute
   '/tournee': typeof AuthenticatedTourneeRoute
   '/patients/$patientId': typeof AuthenticatedPatientsPatientIdRoute
   '/patients': typeof AuthenticatedPatientsIndexRoute
@@ -95,6 +104,7 @@ export interface FileRoutesById {
   '/_authenticated/actes': typeof AuthenticatedActesRoute
   '/_authenticated/bienvenue': typeof AuthenticatedBienvenueRoute
   '/_authenticated/facturation': typeof AuthenticatedFacturationRoute
+  '/_authenticated/prescripteurs': typeof AuthenticatedPrescripteursRoute
   '/_authenticated/tournee': typeof AuthenticatedTourneeRoute
   '/_authenticated/patients/$patientId': typeof AuthenticatedPatientsPatientIdRoute
   '/_authenticated/patients/': typeof AuthenticatedPatientsIndexRoute
@@ -107,6 +117,7 @@ export interface FileRouteTypes {
     | '/actes'
     | '/bienvenue'
     | '/facturation'
+    | '/prescripteurs'
     | '/tournee'
     | '/patients/$patientId'
     | '/patients/'
@@ -117,6 +128,7 @@ export interface FileRouteTypes {
     | '/actes'
     | '/bienvenue'
     | '/facturation'
+    | '/prescripteurs'
     | '/tournee'
     | '/patients/$patientId'
     | '/patients'
@@ -128,6 +140,7 @@ export interface FileRouteTypes {
     | '/_authenticated/actes'
     | '/_authenticated/bienvenue'
     | '/_authenticated/facturation'
+    | '/_authenticated/prescripteurs'
     | '/_authenticated/tournee'
     | '/_authenticated/patients/$patientId'
     | '/_authenticated/patients/'
@@ -183,6 +196,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedFacturationRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/prescripteurs': {
+      id: '/_authenticated/prescripteurs'
+      path: '/prescripteurs'
+      fullPath: '/prescripteurs'
+      preLoaderRoute: typeof AuthenticatedPrescripteursRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/tournee': {
       id: '/_authenticated/tournee'
       path: '/tournee'
@@ -211,6 +231,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedActesRoute: typeof AuthenticatedActesRoute
   AuthenticatedBienvenueRoute: typeof AuthenticatedBienvenueRoute
   AuthenticatedFacturationRoute: typeof AuthenticatedFacturationRoute
+  AuthenticatedPrescripteursRoute: typeof AuthenticatedPrescripteursRoute
   AuthenticatedTourneeRoute: typeof AuthenticatedTourneeRoute
   AuthenticatedPatientsPatientIdRoute: typeof AuthenticatedPatientsPatientIdRoute
   AuthenticatedPatientsIndexRoute: typeof AuthenticatedPatientsIndexRoute
@@ -220,6 +241,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedActesRoute: AuthenticatedActesRoute,
   AuthenticatedBienvenueRoute: AuthenticatedBienvenueRoute,
   AuthenticatedFacturationRoute: AuthenticatedFacturationRoute,
+  AuthenticatedPrescripteursRoute: AuthenticatedPrescripteursRoute,
   AuthenticatedTourneeRoute: AuthenticatedTourneeRoute,
   AuthenticatedPatientsPatientIdRoute: AuthenticatedPatientsPatientIdRoute,
   AuthenticatedPatientsIndexRoute: AuthenticatedPatientsIndexRoute,
@@ -236,13 +258,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

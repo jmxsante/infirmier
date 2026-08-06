@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
-import { FileText, Send, Wallet } from "lucide-react";
+import { Download, FileText, Send, Wallet } from "lucide-react";
 import { toast } from "sonner";
 import { AppShell } from "@/components/app-shell";
 import { Badge } from "@/components/ui/badge";
@@ -29,6 +29,24 @@ import {
   type CotationFacturable,
   type StatutFacture,
 } from "@/lib/facturation";
+import {
+  csvFactures,
+  csvRecettes,
+  nomExport,
+  totauxExercice,
+  type FactureComptable,
+  type RecetteComptable,
+} from "@/lib/comptabilite";
+
+/** Déclenche le téléchargement d'un CSV côté navigateur. */
+function telecharger(nom: string, contenu: string) {
+  const url = URL.createObjectURL(new Blob([contenu], { type: "text/csv;charset=utf-8" }));
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = nom;
+  a.click();
+  URL.revokeObjectURL(url);
+}
 
 export const Route = createFileRoute("/_authenticated/facturation")({
   head: () => ({
@@ -95,7 +113,7 @@ function Facturation() {
       const { data, error } = await supabase
         .from("factures")
         .select(
-          "id, numero, statut, total, montant_paye, part_amo, part_amc, part_patient, periode_debut, periode_fin, patients(nom, prenom)",
+          "id, numero, statut, total, montant_paye, part_amo, part_amc, part_patient, periode_debut, periode_fin, date_envoi, date_paiement, patients(nom, prenom)",
         )
         .order("created_at", { ascending: false })
         .limit(100);
@@ -103,6 +121,72 @@ function Facturation() {
       return data ?? [];
     },
   });
+
+  const paiements = useQuery({
+    queryKey: ["paiements", cabinetId],
+    enabled: !!cabinetId,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("paiements")
+        .select("id, montant, date_paiement, source, reference, factures(numero, patients(nom, prenom))")
+        .order("date_paiement", { ascending: true })
+        .limit(2000);
+      if (error) throw new Error(error.message);
+      return data ?? [];
+    },
+  });
+
+  const recettes: RecetteComptable[] = (paiements.data ?? []).map((p) => {
+    const f = p.factures as unknown as
+      | { numero: string; patients: { nom: string; prenom: string } | null }
+      | null;
+    return {
+      date_paiement: p.date_paiement,
+      numero: f?.numero ?? "—",
+      patient: f?.patients ? `${f.patients.prenom} ${f.patients.nom}` : "—",
+      source: p.source,
+      montant: Number(p.montant),
+      reference: p.reference,
+    };
+  });
+
+  const exercice = new Date().getFullYear();
+  const totalExercice = totauxExercice(recettes, exercice);
+
+  function exporterRecettes() {
+    if (recettes.length === 0) {
+      toast.error("Aucun encaissement à exporter.");
+      return;
+    }
+    telecharger(nomExport("livre-recettes", exercice), csvRecettes(recettes));
+    toast.success("Livre de recettes exporté.");
+  }
+
+  function exporterFactures() {
+    const lignes: FactureComptable[] = (factures.data ?? []).map((f) => {
+      const p = f.patients as unknown as { nom: string; prenom: string } | null;
+      return {
+        numero: f.numero,
+        patient: p ? `${p.prenom} ${p.nom}` : "—",
+        periode_debut: f.periode_debut,
+        periode_fin: f.periode_fin,
+        statut: LIBELLES_STATUT[f.statut as StatutFacture] ?? f.statut,
+        total: Number(f.total),
+        montant_paye: Number(f.montant_paye),
+        part_amo: Number(f.part_amo),
+        part_amc: Number(f.part_amc),
+        part_patient: Number(f.part_patient),
+        date_envoi: f.date_envoi,
+        date_paiement: f.date_paiement,
+      };
+    });
+    if (lignes.length === 0) {
+      toast.error("Aucune facture à exporter.");
+      return;
+    }
+    telecharger(nomExport("journal-factures", exercice), csvFactures(lignes));
+    toast.success("Journal des factures exporté.");
+  }
 
   const groupes = Object.values(
     (aFacturer.data ?? []).reduce<
@@ -240,6 +324,7 @@ function Facturation() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["factures"] });
+      queryClient.invalidateQueries({ queryKey: ["paiements"] });
       toast.success("Paiement enregistré.");
       setPaiementPour(null);
       setMontant("");
@@ -267,6 +352,27 @@ function Facturation() {
         <Indicateur titre="Restant à encaisser" valeur={euros(encours)} />
         <Indicateur titre="Factures émises" valeur={String(factures.data?.length ?? 0)} />
       </div>
+
+      <section className="carte-clinique mb-6 flex flex-wrap items-center justify-between gap-3 p-5">
+        <div>
+          <h2 className="font-display text-lg font-semibold">Export comptable {exercice}</h2>
+          <p className="chiffres-tabulaires mt-1 text-sm text-muted-foreground">
+            {totalExercice.nombre} encaissement(s) · {euros(totalExercice.encaisse)} encaissés sur
+            l'exercice. Format CSV français, prêt pour votre comptable.
+          </p>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          <Button variant="outline" size="sm" onClick={exporterRecettes}>
+            <Download className="size-4" />
+            Livre de recettes
+          </Button>
+          <Button variant="outline" size="sm" onClick={exporterFactures}>
+            <Download className="size-4" />
+            Journal des factures
+          </Button>
+        </div>
+      </section>
+
 
       <section className="carte-clinique mb-6 p-5">
         <h2 className="font-display text-lg font-semibold">Passages cotés à facturer</h2>
