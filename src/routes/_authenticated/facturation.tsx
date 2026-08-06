@@ -353,6 +353,27 @@ function Facturation() {
         <Indicateur titre="Factures émises" valeur={String(factures.data?.length ?? 0)} />
       </div>
 
+      <section className="carte-clinique mb-6 flex flex-wrap items-center justify-between gap-3 p-5">
+        <div>
+          <h2 className="font-display text-lg font-semibold">Export comptable {exercice}</h2>
+          <p className="chiffres-tabulaires mt-1 text-sm text-muted-foreground">
+            {totalExercice.nombre} encaissement(s) · {euros(totalExercice.encaisse)} encaissés sur
+            l'exercice. Format CSV français, prêt pour votre comptable.
+          </p>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          <Button variant="outline" size="sm" onClick={exporterRecettes}>
+            <Download className="size-4" />
+            Livre de recettes
+          </Button>
+          <Button variant="outline" size="sm" onClick={exporterFactures}>
+            <Download className="size-4" />
+            Journal des factures
+          </Button>
+        </div>
+      </section>
+
+
       <section className="carte-clinique mb-6 p-5">
         <h2 className="font-display text-lg font-semibold">Passages cotés à facturer</h2>
         {aFacturer.isLoading ? (
