@@ -434,7 +434,9 @@ export function PlansDeSoins({ patientId }: { patientId: string }) {
                     <Badge variant={p.actif ? "default" : "secondary"}>
                       {p.actif ? "Actif" : "Suspendu"}
                     </Badge>
+                    <BadgeOrdonnance plan={p} />
                   </div>
+
                   <p className="mt-1 flex items-center gap-1.5 text-sm text-muted-foreground">
                     <CalendarDays className="size-3.5" />
                     {p.jours_semaine.length === 7 || p.jours_semaine.length === 0
