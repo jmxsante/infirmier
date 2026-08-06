@@ -479,3 +479,53 @@ export function PlansDeSoins({ patientId }: { patientId: string }) {
     </section>
   );
 }
+
+interface PlanOrdonnance {
+  date_debut: string;
+  date_fin: string | null;
+  ordonnances: {
+    statut: string;
+    date_debut: string | null;
+    date_fin: string | null;
+    fichier_path: string | null;
+  } | null;
+}
+
+/** Indique si le plan s'appuie sur une ordonnance valide couvrant toute sa période. */
+function BadgeOrdonnance({ plan }: { plan: PlanOrdonnance }) {
+  const o = plan.ordonnances;
+  if (!o)
+    return (
+      <Badge variant="outline" className="gap-1">
+        <AlertTriangle className="size-3" />
+        Sans ordonnance
+      </Badge>
+    );
+
+  const aujourdhui = new Date().toISOString().slice(0, 10);
+  const statut = statutEffectif({ ...o, statut: o.statut as StatutOrdonnance }, aujourdhui);
+  const couvre = couvreLaPeriode(
+    { ...o, statut: o.statut as StatutOrdonnance },
+    plan.date_debut,
+    plan.date_fin,
+  );
+
+  if (statut !== "valide" || !couvre)
+    return (
+      <Badge variant="destructive" className="gap-1">
+        <AlertTriangle className="size-3" />
+        {statut === "expiree"
+          ? "Ordonnance expirée"
+          : statut === "a_recuperer"
+            ? "Ordonnance à récupérer"
+            : "Couverture incomplète"}
+      </Badge>
+    );
+
+  return (
+    <Badge variant="secondary" className="gap-1">
+      <FileCheck2 className="size-3" />
+      Prescrit
+    </Badge>
+  );
+}
