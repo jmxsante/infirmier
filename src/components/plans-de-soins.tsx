@@ -126,6 +126,7 @@ export function PlansDeSoins({ patientId }: { patientId: string }) {
         .insert({
           cabinet_id: cabinetId,
           patient_id: patientId,
+          ordonnance_id: ordonnanceId === "aucune" ? null : ordonnanceId,
           libelle: libelle.trim() || "Plan de soins",
           date_debut: dateDebut,
           date_fin: dateFin || null,
